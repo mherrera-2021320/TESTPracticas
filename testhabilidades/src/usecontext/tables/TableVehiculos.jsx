@@ -1,161 +1,125 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from "axios";
 
-const TableVehiculos = () => {
+function TableVehiculos() {
+
+  const [data, setData] = useState([]);
+  const [marca, setMarca] = useState('');
+  const [modelo, setModelo] = useState('');
+  const [año, setAño] = useState('')
+  const [fechaComrpa, setFechaCompra] = useState('')
+
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/vehiculo/ver');
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+  };
+
+
+  const addItem = async () => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/vehiculo/agregar', {
+        marca,
+        modelo,
+        año,
+        fechaComrpa
+      });
+      setData([...data, response.items]);
+      setMarca('');
+      setModelo('');
+      setAño('');
+      setFechaCompra('');
+    } catch (error) {
+      console.error('Error adding item:', error);
+    }
+  };
+
+
+  const deleteItem = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/vehiculo/${id}`);
+      fetchItems(); // Actualizar la lista de elementos después de la eliminación
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
+
+
   return (
     <>
-
-      <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-        Agregar Vehiculo
-      </button>
-
-
-      <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              {/* //Formulario */}
-
-              <form className="row g-3">
-                <div className="col-md-4">
-                  <label htmlFor="validationDefault01" className="form-label">First name</label>
-                  <input type="text" className="form-control" id="validationDefault01" defaultValue="Mark" required />
-                </div>
-                <div className="col-md-4">
-                  <label htmlFor="validationDefault02" className="form-label">Last name</label>
-                  <input type="text" className="form-control" id="validationDefault02" defaultValue="Otto" required />
-                </div>
-                <div className="col-md-4">
-                  <label htmlFor="validationDefaultUsername" className="form-label">Username</label>
-                  <div className="input-group">
-                    <span className="input-group-text" id="inputGroupPrepend2">@</span>
-                    <input type="text" className="form-control" id="validationDefaultUsername" aria-describedby="inputGroupPrepend2" required />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <label htmlFor="validationDefault03" className="form-label">City</label>
-                  <input type="text" className="form-control" id="validationDefault03" required />
-                </div>
-                <div className="col-md-3">
-                  <label htmlFor="validationDefault04" className="form-label">State</label>
-                  <select className="form-select" id="validationDefault04" required>
-                    <option >Choose...</option>
-                    <option> Activo </option>
-                    <option> Pasivo</option>
-                  </select>
-                </div>
-                <div className="col-md-3">
-                  <label htmlFor="validationDefault05" className="form-label">Zip</label>
-                  <input type="text" className="form-control" id="validationDefault05" required />
-                </div>
-                <div className="col-12">
-                  <div className="form-check">
-                    <input className="form-check-input" type="checkbox" defaultValue="" id="invalidCheck2" required />
-                    <label className="form-check-label" htmlFor="invalidCheck2">
-                      Agree to terms and conditions
-                    </label>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <button className="btn btn-primary" type="submit">Submit form</button>
-                </div>
-              </form>
-
-
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary">Understood</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <br />
-      <br />
-
-
-
       <div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Marca</th>
-              <th scope="col">Modelo</th>
-              <th scope="col">Año</th>
-              <th scope="col">F. de Compra</th>
-              <th scope="col">Contrato</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>Otto</td>
-              <td>Otto</td>
-              <td>Otto</td>
-              <td>
-                <button type="button" className="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticUpdate">
-                  Editar
-                </button>
-                <div className="modal fade" id="staticUpdate" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div className="modal-body">
+        <h1>Datos</h1>
+        <div>
+          <h2> Agregar Nuevo Item</h2>
+          <input
+            type="text"
+            placeholder="Marca"
+            value={marca}
+            onChange={e => setMarca(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Modelo"
+            value={modelo}
+            onChange={e => setModelo(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Año"
+            value={año}
+            onChange={e => setAño(e.target.value)}
+          />
+          <input
+            type="date"
+            placeholder="Fecha Compra"
+            value={fechaComrpa}
+            onChange={e => setFechaCompra(e.target.value)}
+          />
 
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" className="btn btn-danger">Eliminar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
+          <button onClick={addItem}>Add Item</button>
 
-              <td>
-                <button type="button" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticDelete">
-                  Eliminar
-                </button>
-                <div className="modal fade" id="staticDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div className="modal-body">
-                        Estas Seguro ?
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" className="btn btn-danger">Eliminar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
+        </div>
+        <div>
+          <table className="table">
+            <thead>
+              <tr >
+                <th scope="col"> # </th>
+                <th scope="col"> Marca</th>
+                <th scope="col"> Modelo</th>
+                <th scope="col"> Año </th>
+                <th scope="col"> Fecha</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map(datos => (
+                <tr key={datos._id}>
+                  <td>{datos._id}</td>
+                  <td>{datos.marca}</td>
+                  <td>{datos.modelo}</td>
+                  <td>{datos.año}</td>
+                  <td>{datos.fecha}</td>
+                  <td><button>Editar</button></td>
+                  <td><button onClick={() => deleteItem(datos._id)}>Delete</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          </tbody>
-        </table>
-
-
-
+        </div>
 
       </div>
-
     </>
   )
 }

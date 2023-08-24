@@ -1,6 +1,6 @@
 import React from 'react'
 
-const tablaClases = () => {
+function tablaClases () {
     return (
         <>
 

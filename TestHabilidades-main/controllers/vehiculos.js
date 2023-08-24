@@ -20,8 +20,8 @@ const getVehiculos = async (req = request, res = response) => {
 
 const postVehiculos = async (req = request, res = response) => {
 
-    const { marca, modelo, año, fechaCompra, estadoVehiculo } = req.body;
-    const vehiculoDB = new Vehiculos({ marca, modelo, año, fechaCompra, estadoVehiculo });
+    const { marca, modelo, año, fechaCompra  } = req.body;
+    const vehiculoDB = new Vehiculos({ marca, modelo, año, fechaCompra });
 
     await vehiculoDB.save();
 
